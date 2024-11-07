@@ -1360,17 +1360,21 @@ class Pipenet:
         for step_name in self.steps_graph_.keys():
             if step_name == "original":
                 continue
-            df = df.append(
-                {
-                    "name": step_name,
-                    "model": self.steps[step_name]["model"].__class__.__name__,
-                    "input": self.steps[step_name]["input"],
-                    "subset": (
-                        self.steps[step_name]["subset"]
-                        if "subset" in self.steps[step_name].keys()
-                        else "all"
-                    ),
-                },
+            # [python - Constructing DataFrame from values in variables yields "ValueError: If using all scalar values, you must pass an index" - Stack Overflow](https://stackoverflow.com/questions/17839973/constructing-dataframe-from-values-in-variables-yields-valueerror-if-using-all)
+            # https://stackoverflow.com/a/54459082/974526
+            df2 = pd.DataFrame(
+                        [{
+                            "name": step_name,
+                            "model": self.steps[step_name]["model"].__class__.__name__,
+                            "input": self.steps[step_name]["input"],
+                            "subset": (
+                                self.steps[step_name]["subset"]
+                                if "subset" in self.steps[step_name].keys()
+                                else "all"
+                            ),
+                        }]
+                    )
+            df = pd.concat([df, df2],
                 ignore_index=True,
             )
         print(tabulate(df, headers="keys", tablefmt="simple", showindex=False))
