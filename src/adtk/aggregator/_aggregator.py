@@ -122,7 +122,9 @@ class OrAggregator(_Aggregator):
                 )
         else:  # pandas DataFrame
             predicted = lists.any(axis=1)
-            predicted[~predicted & lists.isna().any(axis=1)] = float("nan")
+            predicted_true_idx = predicted
+            predicted = predicted.astype(object)
+            predicted[~predicted_true_idx & lists.isna().any(axis=1)] = float("nan")
             return predicted
 
 
@@ -208,5 +210,7 @@ class AndAggregator(_Aggregator):
                 )
         else:  # pandas DataFrame
             predicted = lists.all(axis=1)
-            predicted[predicted & lists.isna().any(axis=1)] = float("nan")
+            predicted_true_idx = predicted
+            predicted = predicted.astype(object)
+            predicted[predicted_true_idx & lists.isna().any(axis=1)] = float("nan")
             return predicted
